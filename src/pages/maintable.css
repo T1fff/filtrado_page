@@ -68,6 +68,27 @@ tfoot td {
   align-self: flex-end;
   padding: 5px 10px;
   background-color: rgb(228 240 245);
-    border: 1px solid rgb(160 160 160);
+  border: 1px solid rgb(160 160 160);
   cursor: pointer;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-spinner {
+  border: 8px solid rgba(181, 170, 170, 0.1);
+  border-left-color: #8a8686;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

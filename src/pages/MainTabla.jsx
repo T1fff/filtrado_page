@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import "./maintable.css"
 import Airtable from "airtable"
+import toast, { Toaster } from "react-hot-toast"
 
 // Configura tu API Key y la base
 const base = new Airtable({
@@ -18,11 +19,30 @@ export const MainTabla = () => {
 
   // Manejar el envío del formulario
   const onSubmit = async (formData) => {
+    // Verificar que todos los campos del formData están llenos
+    if (
+      !formData.keyword ||
+      !formData.inst_ed ||
+      !formData.init_date ||
+      !formData.end_date
+    ) {
+      toast.error("Rellena todos los campos.")
+      return
+    }
+
     setLoading(true)
     setError("")
-    const resultados = await buscarFotosPorDescripcion(formData)
-    setData(resultados)
-    setLoading(false)
+
+    try {
+      const resultados = await buscarFotosPorDescripcion(formData)
+      setData(resultados)
+    } catch (error) {
+      console.error("Error al buscar fotos por descripción:", error)
+      setError("Error al realizar la búsqueda")
+      setData([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   function getDirectImageUrl(driveUrl) {
@@ -128,71 +148,78 @@ export const MainTabla = () => {
   }
 
   return (
-    <div className="container">
-      <h1>Filtros</h1>
-      <form className="filters" onSubmit={handleSubmit(onSubmit)}>
-        <div className="form-group">
-          <label htmlFor="inst_ed">Institución educativa:</label>
-          <input type="text" id="inst_ed" {...register("inst_ed")} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="init_date">Fecha inicial:</label>
-          <input type="date" id="init_date" {...register("init_date")} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="end_date">Fecha Fin:</label>
-          <input type="date" id="end_date" {...register("end_date")} />
-        </div>
-        <div className="form-group">
-          <label htmlFor="keyword">Palabras Clave:</label>
-          <input type="text" id="keyword" {...register("keyword")} />
-        </div>
-        <button type="submit">Buscar</button>
-      </form>
-      <div className="table-container">
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Fecha inicial</th>
-                <th scope="col">Institución educativa</th>
-                <th scope="col">Registro</th>
-                <th scope="col">Actividad de registro</th>
-                <th scope="col">Imagen</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.length > 0 ? (
-                data.map((item, index) => (
-                  <tr key={index}>
-                    <td>{formatFechaHora(item.fecha)}</td>
-                    <td>{item.colegio}</td>
-                    <td>{item.link}</td>
-                    <td>{item.descripcion}</td>
-                    <td>
-                      {item.link && (
-                        <img
-                          src={getDirectImageUrl(item.link)}
-                          alt=""
-                          srcSet=""
-                          width={150}
-                        />
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5">No hay registros encontrados</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-        {error && <p className="error">{error}</p>}
+    <>
+      <div>
+        <Toaster />
       </div>
-    </div>
+      <div className="container">
+        <h1>Filtros</h1>
+        <form className="filters" onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label htmlFor="inst_ed">Institución educativa:</label>
+            <input type="text" id="inst_ed" {...register("inst_ed")} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="init_date">Fecha inicial:</label>
+            <input type="date" id="init_date" {...register("init_date")} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="end_date">Fecha Fin:</label>
+            <input type="date" id="end_date" {...register("end_date")} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="keyword">Palabras Clave:</label>
+            <input type="text" id="keyword" {...register("keyword")} />
+          </div>
+          <button type="submit">Buscar</button>
+        </form>
+        <div className="table-container">
+          {loading ? (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+            </div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Fecha inicial</th>
+                  <th scope="col">Institución educativa</th>
+                  <th scope="col">Registro</th>
+                  <th scope="col">Actividad de registro</th>
+                  <th scope="col">Imagen</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.length > 0 ? (
+                  data.map((item, index) => (
+                    <tr key={index}>
+                      <td>{formatFechaHora(item.fecha)}</td>
+                      <td>{item.colegio}</td>
+                      <td>{item.link}</td>
+                      <td>{item.descripcion}</td>
+                      <td>
+                        {item.link && (
+                          <img
+                            src={getDirectImageUrl(item.link)}
+                            alt=""
+                            srcSet=""
+                            width={150}
+                          />
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No hay registros encontrados</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
+          {error && <p className="error">{error}</p>}
+        </div>
+      </div>
+    </>
   )
 }
