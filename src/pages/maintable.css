@@ -1,0 +1,73 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+  gap: 2rem;
+}
+table {
+  width: 100%;
+  border: 1px solid rgb(140 140 140);
+  font-size: 0.8rem;
+}
+
+caption {
+  caption-side: bottom;
+  padding: 10px;
+  font-weight: bold;
+}
+
+thead,
+tfoot {
+  background-color: rgb(228 240 245);
+}
+
+th,
+td {
+  min-width: 10rem;
+  border: 1px solid rgb(160 160 160);
+  padding: 8px 10px;
+}
+
+td:last-of-type {
+  text-align: center;
+}
+
+tbody > tr:nth-of-type(even) {
+  background-color: rgb(237 238 242);
+}
+
+tfoot th {
+  text-align: right;
+}
+
+tfoot td {
+  font-weight: bold;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  justify-content: space-between;
+}
+
+.form-group input {
+  border: 1px solid rgb(160 160 160);
+  min-width: 10rem;
+  padding: 3px 5px;
+}
+
+.filters button {
+  align-self: flex-end;
+  padding: 5px 10px;
+  background-color: rgb(228 240 245);
+    border: 1px solid rgb(160 160 160);
+  cursor: pointer;
+}
